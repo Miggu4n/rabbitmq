@@ -1,0 +1,32 @@
+{
+  "name": "rabbitmq",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "mongodb": "^6.5.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.13",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.5"
+  },
+  "scripts": {
+    "dev:api": "nodemon src/api/index.ts",
+    "dev:db": "nodemon src/db/index.ts",
+    "dev:mail": "nodemon src/mail/index.ts",
+    "dev:cron": "nodemon src/cron/index.ts"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/node": "^20.12.4",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3"
+  }
+}
