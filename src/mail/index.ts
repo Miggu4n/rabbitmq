@@ -10,13 +10,15 @@ const {
   AMQP_MAIL_QUEUE = "",
 } = process.env;
 
-type CreateUserAction = {
+type Birthday = {
+  name: string;
+  email: string;
+  date: Date;
+};
+
+type CreateBirthdayAction = {
   type: "create" | "birthday";
-  data: {
-    name: string;
-    date: Date;
-    email: string;
-  };
+  data: Birthday;
 };
 
 async function sendOnboardEmail(email: string) {
@@ -47,7 +49,9 @@ async function consumeMessages() {
   return await rabbitMQIstance.channel?.consume("mail", async (msg) => {
     if (!msg) return;
     const message = msg.content.toString();
-    const action = parseMessage<CreateUserAction>(message!);
+    const action = parseMessage<CreateBirthdayAction>(message!);
+
+    if (!action) return;
 
     switch (action.type) {
       case "birthday":

@@ -9,7 +9,7 @@ type CreateBirthdayRequest = {
   Body: { name: string; date: Date; email: string };
 };
 
-type User = {
+type Birthday = {
   date: Date;
   name: string;
   email: string;
@@ -17,7 +17,7 @@ type User = {
 
 type BirthayMessage = {
   type: "create";
-  data: User;
+  data: Birthday;
 };
 
 type RPCMessage = {

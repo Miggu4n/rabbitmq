@@ -12,14 +12,14 @@ enum Collections {
   BIRTHDAYS = "birthdays",
 }
 
-type User = {
+type Birthday = {
   date: Date;
   name: string;
   email: string;
 };
 
 export interface Db {
-  [Collections.BIRTHDAYS]: Collection<User>;
+  [Collections.BIRTHDAYS]: Collection<Birthday>;
 }
 
 export const db: Db = {

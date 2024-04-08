@@ -15,29 +15,31 @@ type RPCMessage = {
   status: number;
 };
 
-type User = {
+type Birthday = {
   name: string;
   date: Date;
   email: string;
 };
 
-type CreateUserAction = {
+type CreateBirthdayAction = {
   type: "create";
-  data: User;
+  data: Birthday;
 };
 
 async function initializeAmqp() {
   await rabbitMQIstance.connect();
+
   await rabbitMQIstance.channel!.assertQueue(AMQP_DB_QUEUE, { durable: true });
-  await rabbitMQIstance.channel!.assertQueue(AMQP_RPC_QUEUE, { durable: true });
   await rabbitMQIstance.channel!.bindQueue(AMQP_DB_QUEUE, AMQP_EXCHANGE, "");
+
+  await rabbitMQIstance.channel!.assertQueue(AMQP_RPC_QUEUE, { durable: true });
   await rabbitMQIstance.channel!.bindQueue(AMQP_RPC_QUEUE, AMQP_EXCHANGE, "");
 }
 
-function createUser(user: User) {
+function createBirthday(birthday: Birthday) {
   return db.birthdays.insertOne({
-    ...user,
-    date: new Date(user.date),
+    ...birthday,
+    date: new Date(birthday.date),
   });
 }
 
@@ -45,18 +47,19 @@ async function consumeMessages() {
   return rabbitMQIstance.channel!.consume(AMQP_DB_QUEUE, async (message) => {
     if (!message) return;
 
-    const action = parseMessage<CreateUserAction>(message.content.toString());
+    const action = parseMessage<CreateBirthdayAction>(
+      message.content.toString()
+    );
 
     if (!action) return;
 
     try {
       if (action.type !== "create") return;
-      await createUser(action.data);
+      await createBirthday(action.data);
       rabbitMQIstance.channel!.ack(message);
       const reply = formatMessage<RPCMessage>({
         status: 201,
       });
-      console.log(JSON.parse(reply.toString()));
       rabbitMQIstance.channel!.publish(AMQP_RPC_EXCHANGE, "", reply, {
         correlationId: message.properties.correlationId,
       });
@@ -64,7 +67,6 @@ async function consumeMessages() {
       const reply = formatMessage<RPCMessage>({
         status: 500,
       });
-      console.log(JSON.parse(reply.toString()));
       rabbitMQIstance.channel!.publish(AMQP_RPC_EXCHANGE, "", reply, {
         correlationId: message.properties.correlationId,
       });
